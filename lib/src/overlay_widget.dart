@@ -3,13 +3,13 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class Overlay extends StatefulWidget {
+class OverlayWidget extends StatefulWidget {
   final Widget widget;
   final bool loading;
   final bool error;
   final String errorMessage;
 
-  const Overlay({
+  const OverlayWidget({
     Key? key,
     required this.loading,
     required this.error,
@@ -18,10 +18,10 @@ class Overlay extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _OverlayState createState() => _OverlayState();
+  _OverlayWidgetState createState() => _OverlayWidgetState();
 }
 
-class _OverlayState extends State<Overlay> {
+class _OverlayWidgetState extends State<OverlayWidget> {
   @override
   Widget build(BuildContext context) {
     return Stack(
