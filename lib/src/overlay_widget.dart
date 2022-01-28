@@ -52,6 +52,29 @@ class _OverlayWidgetState extends State<OverlayWidget> {
             }
           },
         ),
+        SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: Builder(
+            builder: (BuildContext context) {
+              if (widget.error) {
+                return Container(
+                  color: Colors.white,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Icon(CupertinoIcons.exclamationmark_triangle),
+                      Text(widget.errorMessage),
+                    ],
+                  ),
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            },
+          ),
+        ),
       ],
     );
   }
