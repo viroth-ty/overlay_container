@@ -4,17 +4,25 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class OverlayWidget extends StatefulWidget {
-  final Widget widget;
+  final Widget child;
+  final Widget? loadingChild;
+  final Widget? emptyChild;
+  final VoidCallback? onRetry;
+  final String? errorMessage;
   final bool loading;
   final bool error;
-  final String errorMessage;
+  final bool empty;
 
   const OverlayWidget({
     Key? key,
-    required this.loading,
-    required this.error,
+    this.loading = false,
+    this.error = false,
+    this.empty = false,
     required this.errorMessage,
-    required this.widget,
+    required this.child,
+    this.loadingChild,
+    this.emptyChild,
+    this.onRetry,
   }) : super(key: key);
 
   @override
@@ -23,27 +31,33 @@ class OverlayWidget extends StatefulWidget {
 
 class _OverlayWidgetState extends State<OverlayWidget> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        widget.widget,
+        widget.child,
         Builder(
           builder: (BuildContext context) {
             if (widget.loading) {
               return Container(
                 color: Colors.black.withAlpha(60),
                 child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(12),
-                      ),
-                    ),
-                    child: Platform.isIOS
-                        ? const CupertinoActivityIndicator()
-                        : const CircularProgressIndicator(),
+                  child: Builder(
+                    builder: (BuildContext context) {
+                      if (widget.loadingChild != null) {
+                        return widget.loadingChild!;
+                      } else {
+                        if (Platform.isIOS) {
+                          return const CupertinoActivityIndicator();
+                        } else {
+                          return const CircularProgressIndicator();
+                        }
+                      }
+                    },
                   ),
                 ),
               );
@@ -64,11 +78,47 @@ class _OverlayWidgetState extends State<OverlayWidget> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Icon(CupertinoIcons.exclamationmark_triangle),
-                      Text(widget.errorMessage),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(
+                          CupertinoIcons.exclamationmark_triangle,
+                          color: Theme.of(context).primaryColor,
+                          size: 32.0,
+                        ),
+                      ),
+                      Text(widget.errorMessage ?? "Something went wrong"),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: OutlinedButton(
+                          onPressed: widget.onRetry!,
+                          child: const Text("Retry"),
+                          // child: Text(""),
+                        ),
+                      )
                     ],
                   ),
                 );
+              } else {
+                return const SizedBox.shrink();
+              }
+            },
+          ),
+        ),
+        SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: Builder(
+            builder: (BuildContext context) {
+              if (widget.empty) {
+                if (widget.emptyChild != null) {
+                  return widget.emptyChild!;
+                } else {
+                  return Container(
+                    color: Colors.white,
+                    child: const Center(
+                      child: Text("Empty"),
+                    ),
+                  );
+                }
               } else {
                 return const SizedBox.shrink();
               }
